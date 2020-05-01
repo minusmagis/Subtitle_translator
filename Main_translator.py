@@ -2,6 +2,8 @@ import googletrans
 from googletrans import Translator
 from tkinter import filedialog
 import math
+import os
+import Small_Functions as sf
 
 def split(word):
     return [char for char in word]
@@ -12,8 +14,11 @@ translator = Translator()
 Source_language = 'es'
 Destination_language = 'ca'
 
-# Subtitle_file = filedialog.askopenfilename(title='Select the input subtitle file', initialdir=r'C:\Users\minus\Documents\Fedellando\Video 5 Sand Filter\Subtitles', filetypes=(('sbv', '*.sbv'), ('All files', '*.*')))  # Prompt the user to open a file that contains the subtitle file to be translated.
-Subtitle_file = r'C:\Users\minus\Documents\Fedellando\Video 5 Sand Filter\Subtitles\Full spanish captions.sbv'
+Subtitle_file = filedialog.askopenfilename(title='Select the input subtitle file', initialdir=r'C:\Users\minus\Documents\Fedellando\Video 5 Sand Filter\Subtitles', filetypes=(('sbv', '*.sbv'), ('All files', '*.*')))  # Prompt the user to open a file that contains the subtitle file to be translated.
+Save_file_directory = filedialog.askdirectory(title='Select the directory where you want to save the resulting subtitle file', initialdir=r'C:\Users\minus\Documents\Fedellando\Video 5 Sand Filter\Subtitles', mustexist=True)  # Ask for the directory where the resulting subtitle file will be saved
+
+
+# Subtitle_file = r'C:\Users\minus\Documents\Fedellando\Video 5 Sand Filter\Subtitles\Full spanish captions.sbv'
 Subtitle_text = open(Subtitle_file, "r",encoding='utf-8')
 Subtitle_text_array = Subtitle_text.read().split('\n')
 # print(Subtitle_text.read().split('\n'))
@@ -148,5 +153,12 @@ for main_index,sub_sentence in enumerate(Subtitle_text_array):
 
 # print(*translated_file,sep='\n')
 
+Subtitle_file_translated = sf.Full_path_adder(('Captions in '+str(Destination_language)+' file.sbv'),Save_file_directory)
 
+Subtitle_file_sbv = open(Subtitle_file_translated,'w',encoding="utf-8")
+for line in translated_file:
+    Subtitle_file_sbv.write(str(line) + '\n')
+    # print(current_image_hash)
+    # print(file_duplicate_list)
+Subtitle_file_sbv.close()
 
