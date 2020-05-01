@@ -14,11 +14,11 @@ translator = Translator()
 Source_language = 'es'
 Destination_language = 'ca'
 
-Subtitle_file = filedialog.askopenfilename(title='Select the input subtitle file', initialdir=r'C:\Users\minus\Documents\Fedellando\Video 5 Sand Filter\Subtitles', filetypes=(('sbv', '*.sbv'), ('All files', '*.*')))  # Prompt the user to open a file that contains the subtitle file to be translated.
+# Subtitle_file = filedialog.askopenfilename(title='Select the input subtitle file', initialdir=r'C:\Users\minus\Documents\Fedellando\Video 5 Sand Filter\Subtitles', filetypes=(('sbv', '*.sbv'), ('All files', '*.*')))  # Prompt the user to open a file that contains the subtitle file to be translated.
 Save_file_directory = filedialog.askdirectory(title='Select the directory where you want to save the resulting subtitle file', initialdir=r'C:\Users\minus\Documents\Fedellando\Video 5 Sand Filter\Subtitles', mustexist=True)  # Ask for the directory where the resulting subtitle file will be saved
 
 
-# Subtitle_file = r'C:\Users\minus\Documents\Fedellando\Video 5 Sand Filter\Subtitles\Full spanish captions.sbv'
+Subtitle_file = r'C:\Users\minus\Documents\Fedellando\Video 5 Sand Filter\Subtitles\Full spanish captions.sbv'
 Subtitle_text = open(Subtitle_file, "r",encoding='utf-8')
 Subtitle_text_array = Subtitle_text.read().split('\n')
 # print(Subtitle_text.read().split('\n'))
@@ -77,10 +77,10 @@ translated_string_list = list()
 for string in Sentence_string_list:
     if string:
         # print(string+' to translate')
-        # translated_sentence = translator.translate(string,dest= Destination_language,src=Source_language)
-        translated_sentence = string
-        # translated_string_list.append(translated_sentence.text)
-        translated_string_list.append(translated_sentence)
+        translated_sentence = translator.translate(string,dest= Destination_language,src=Source_language)
+        # translated_sentence = string
+        translated_string_list.append(translated_sentence.text)
+        # translated_string_list.append(translated_sentence)
 
 # print(*translated_string_list,sep='\n')
 
@@ -125,23 +125,31 @@ for index,translated_sentence_full in enumerate(translated_string_list):
         # print(translated_sentence_full_temporal)
 
         translated_string_list_formatted.append(translated_sentence_full_temporal)
+    else:
+        translated_string_list_formatted.append(translated_sentence_full)
 
 # print(*translated_string_list_formatted,sep='\n')
 
 for index,sublist in enumerate(translated_string_list_formatted):
-    for sub_index,sentence in enumerate(sublist):
-        translated_string_list_formatted[index][sub_index] = sentence.strip()
+    if isinstance(sublist,list):
+        for sub_index,sentence in enumerate(sublist):
+            translated_string_list_formatted[index][sub_index] = sentence.strip()
+    else:
+        translated_string_list_formatted[index]= sublist.strip()
 
 
 translated_file = Subtitle_text_array
 
 for main_index,sub_sentence in enumerate(Subtitle_text_array):
-    for Meta_string_index,replace_index_list in enumerate(Meta_sentence_string_replace_list):
+    for Meta_string_index,replace_index_list in enumerate(Meta_sentence_string_list):
         try:
             index_to_replace = replace_index_list.index(main_index)
             # print('current line to replace= '+str(main_index)+'   Index of the meta string to replace = '+str(index_to_replace))
             # print(translated_string_list_formatted[Meta_string_index])
-            translated_file[main_index] = translated_string_list_formatted[Meta_string_index][index_to_replace]
+            if isinstance(translated_string_list_formatted[Meta_string_index],list):
+                translated_file[main_index] = translated_string_list_formatted[Meta_string_index][index_to_replace]
+            else:
+                translated_file[main_index] = translated_string_list_formatted[Meta_string_index]
             # print('replaced')
             # print('--------------')
             # print('Pre replacement: '+str(sub_sentence))
@@ -151,7 +159,7 @@ for main_index,sub_sentence in enumerate(Subtitle_text_array):
             pass
     # print(translated_file)
 
-# print(*translated_file,sep='\n')
+print(*translated_file,sep='\n')
 
 Subtitle_file_translated = sf.Full_path_adder(('Captions in '+str(Destination_language)+' file.sbv'),Save_file_directory)
 
