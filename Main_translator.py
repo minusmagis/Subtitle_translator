@@ -3,6 +3,9 @@ from googletrans import Translator
 from tkinter import filedialog
 import math
 
+def split(word):
+    return [char for char in word]
+
 translator = Translator()
 # print(translator.translate('Hola',dest= 'ca',src='es'))
 
@@ -46,13 +49,23 @@ for index,sub_sentence in enumerate(Subtitle_text_array):
 
 Sentence_string_list = Sentence_string.split('\n')
 Meta_sentence_string_list = Meta_sentence_string.split('\n')
+Meta_sentence_string_replace_list = list()
 
 for index,metadata in enumerate(Meta_sentence_string_list):
     Meta_sentence_string_list[index] = metadata.split(',')
+    if len(Meta_sentence_string_list[index])>=2:
+        Meta_sentence_string_replace_list.append(Meta_sentence_string_list[index])
+    for sub_index,data in enumerate(Meta_sentence_string_list[index]):
+        Meta_sentence_string_list[index][sub_index] = int(data)
+
+for index,sublist in enumerate(Meta_sentence_string_replace_list):
+    for sub_index,sub_value in enumerate(sublist):
+        Meta_sentence_string_replace_list[index][sub_index] = int(sub_value)
 
 
 # print(*Sentence_string_list,sep='\n')
 # print(*Meta_sentence_string_list,sep='\n')
+# print(*Meta_sentence_string_replace_list,sep='\n')
 
 translated_string_list = list()
 
@@ -71,46 +84,69 @@ translated_string_list_formatted = list()
 
 for index,translated_sentence_full in enumerate(translated_string_list):
     if len(Meta_sentence_string_list[index])>=2:
-        translated_sentence_full_temporal = translated_sentence_full
-        print('------------Loop start-------------')
+        translated_sentence_full_temporal = split(translated_sentence_full)
+        # print('------------Loop start-------------')
         # print(translated_sentence_full)
-        print(Meta_sentence_string_list[index])
-        print(len(Meta_sentence_string_list[index]))
-        Comma_ammount = 0
-        Comma_indexes = []
-        Cutting_commas = list()
+        # print(Meta_sentence_string_list[index])
+        # print(len(Meta_sentence_string_list[index]))
         White_space_ammount = 0
         White_space_indexes = []
         Cutting_whitespaces = list()
         for sub_index,character in enumerate(translated_sentence_full):
-            if character == ',':
-                Comma_ammount+=1
-                Comma_indexes.append(sub_index)
-            elif character == ' ':
+            if character == ' ':
                 White_space_ammount += 1
                 White_space_indexes.append(sub_index)
         for index_1,_ in enumerate(Meta_sentence_string_list[index]):
+            commafound = False
             if index_1 == 0:
                 continue
             else:
-                if Comma_ammount >0:
-                    Cutting_commas.append(Comma_indexes[math.floor(index_1*Comma_ammount/len(Meta_sentence_string_list[index]))])
-                else:
-                    Cutting_whitespaces.append(White_space_indexes[math.floor(index_1*White_space_ammount/len(Meta_sentence_string_list[index]))])
-        cutting_index = 0
-        for index_1,_ in enumerate(Meta_sentence_string_list[index]):
+                white_space_to_cut = White_space_indexes[math.floor(index_1*White_space_ammount/len(Meta_sentence_string_list[index]))]
+                Cutting_whitespaces.append(white_space_to_cut)
+                for i in range(40):
+                    if translated_sentence_full_temporal[white_space_to_cut-20+i] == ',':
+                        translated_sentence_full_temporal[white_space_to_cut - 20 + i] = ',ß'
+                        commafound = True
+                        break
+                if not commafound:
+                    translated_sentence_full_temporal[white_space_to_cut] = 'ß'
+
+        # for index_1, _ in enumerate(Meta_sentence_string_list[index]):
+        #
+        translated_sentence_full_temporal = ''.join(translated_sentence_full_temporal)
+        translated_sentence_full_temporal = translated_sentence_full_temporal.split('ß')
+
+        # print('White spaces = '+str(White_space_ammount)+','+str(Cutting_whitespaces)+','+str(White_space_indexes))
+        # print(translated_sentence_full_temporal)
+
+        translated_string_list_formatted.append(translated_sentence_full_temporal)
+
+# print(*translated_string_list_formatted,sep='\n')
+
+for index,sublist in enumerate(translated_string_list_formatted):
+    for sub_index,sentence in enumerate(sublist):
+        translated_string_list_formatted[index][sub_index] = sentence.strip()
 
 
+translated_file = Subtitle_text_array
 
-        print('White spaces = '+str(White_space_ammount)+','+str(Cutting_whitespaces)+','+str(White_space_indexes))
-        print('Commas = ' + str(Comma_ammount) + ',' + str(Cutting_commas) + ',' + str(Comma_indexes))
-        print(translated_sentence_full)
+for main_index,sub_sentence in enumerate(Subtitle_text_array):
+    for Meta_string_index,replace_index_list in enumerate(Meta_sentence_string_replace_list):
+        try:
+            index_to_replace = replace_index_list.index(main_index)
+            # print('current line to replace= '+str(main_index)+'   Index of the meta string to replace = '+str(index_to_replace))
+            # print(translated_string_list_formatted[Meta_string_index])
+            translated_file[main_index] = translated_string_list_formatted[Meta_string_index][index_to_replace]
+            # print('replaced')
+            # print('--------------')
+            # print('Pre replacement: '+str(sub_sentence))
+            # print('Post replacement: ' + str(translated_file[main_index]))
+        except ValueError as e:
+            # print(e)
+            pass
+    # print(translated_file)
+
+# print(*translated_file,sep='\n')
 
 
-
-# translated_file = str()
-#
-# for index,sub_sentence in enumerate(Subtitle_text_array):
-#     for sub_indexes in Meta_sentence_string_list:
-#         if index in sub_indexes:
 
