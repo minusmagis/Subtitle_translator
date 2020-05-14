@@ -7,7 +7,7 @@
 separator_character = 'ß'
 
 # Debugging mode disables the translation to avoid hitting the translation limit imposed by google when debugging the program
-Debugging = False
+Debugging = True
 
 from googletrans import Translator                                          # First we import the necessary libraries
 from tkinter import filedialog
@@ -17,7 +17,7 @@ import os
 
 # We set the source language and the desired Destination language for more information on the language codes go to the end of this document.(1)
 Source_language = 'en'
-Destination_language = 'es'
+Destination_language = 'ca'
 
 # We import the translator instance to be used later on the translation process
 if not Debugging:
@@ -96,15 +96,6 @@ for index,metadata in enumerate(Meta_sentence_string_list):
     if len(Meta_sentence_string_list[index])>=2:
         # Append the data into the new array with the sentences that will be spread across more than two lines
         Meta_sentence_string_replace_list.append(Meta_sentence_string_list[index])
-
-    # # Now loop through the current line of the Meta_sentence_string_list converting the values to int. Possibly useless as well
-    for sub_index,data in enumerate(Meta_sentence_string_list[index]):
-        Meta_sentence_string_list[index][sub_index] = int(data)
-
-# # Possibly useless function delete if does not function
-for index,sublist in enumerate(Meta_sentence_string_replace_list):
-    for sub_index,sub_value in enumerate(sublist):
-        Meta_sentence_string_replace_list[index][sub_index] = int(sub_value)
 
 # Prints for debugging purposes
 # print(*Sentence_string_list,sep='\n')
